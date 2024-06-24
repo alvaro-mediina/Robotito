@@ -1,42 +1,40 @@
 import RPi.GPIO as GPIO
-import RPi_map
-import sys
-sys.path.append("../utils/")
-#from Mpu6050 import Mpu6050
 import math
 import threading
-#from Encoder import Encoder
+import sys
 
+sys.path.append("../utils")
+sys.path.append("../data")
 
-
- # en segundos
+from Mpu6050 import Mpu6050
+from Encoder import Encoder
+from RPi_map import *
 
 class Motor():
     
-    def __init__(self):
+    def __init__(self,giro,encoder):
         
         GPIO.setmode(GPIO.BOARD)
-        
         GPIO.setwarnings(False)
-        GPIO.setup(RPi_map.CLKWA0, GPIO.OUT)
-        GPIO.setup(RPi_map.CLKWA1, GPIO.OUT)
-        GPIO.setup(RPi_map.CLKWB0, GPIO.OUT)
-        GPIO.setup(RPi_map.CLKWB1, GPIO.OUT)
+        GPIO.setup(CLKWA0, GPIO.OUT)
+        GPIO.setup(CLKWA1, GPIO.OUT)
+        GPIO.setup(CLKWB0, GPIO.OUT)
+        GPIO.setup(CLKWB1, GPIO.OUT)
         
         #Sensores
-        #self.giro = giro
-        #self.encoder = encoder
+        self.giro = giro
+        self.encoder = encoder
         
         # Configura los pines GPIO como salidas PWM
-        GPIO.setup(RPi_map.PWMA, GPIO.OUT)
-        GPIO.setup(RPi_map.PWMB, GPIO.OUT)
+        GPIO.setup(PWMA, GPIO.OUT)
+        GPIO.setup(PWMB, GPIO.OUT)
+        
         # Configura la frecuencia PWM (en Hz)
-        pwm_frequency = 1000 
+        pwm_frequency = 1000
 
         # Crea objetos PWM para los pines GPIO
-        self.pwm_A = GPIO.PWM(RPi_map.PWMA, pwm_frequency)
-        self.pwm_B = GPIO.PWM(RPi_map.PWMB, pwm_frequency)
-
+        self.pwm_32 = GPIO.PWM(PWMA, pwm_frequency)
+        self.pwm_33 = GPIO.PWM(PWMB, pwm_frequency)
     
         self.rotating = False
         self.moving = False
@@ -45,30 +43,39 @@ class Motor():
         self.TIME_INT0    = 0.1
         self.time_thread = threading.Timer(self.TIME_INT0,self.timer_interrupt)
         self.time_thread.start()
-
-    def avanzar(self,duty_cycle):
+    
+    #PWM2 es el motor de la derecha    (Mirándolo desde el puente H)
+    #PWM1 es el motor de la izquierda 
+    def avanzar(self,pwm1,pwm2):
 
         # Inicia el PWM con un ciclo de trabajo del pot% (máximo)
-        self.pwm_A.start(abs(duty_cycle))
-        self.pwm_B.start(abs(duty_cycle))
-        
+        self.pwm_32.start(abs(pwm1))
+        self.pwm_33.start(abs(pwm2))
         self.moving = True
-        self.rotating = False
 
-        GPIO.output(RPi_map.CLKWA0,1)
-        GPIO.output(RPi_map.CLKWA1,0)
-            
-        GPIO.output(RPi_map.CLKWB0,1)
-        GPIO.output(RPi_map.CLKWB1,0)
+        if (pwm1 > 0):
+            GPIO.output(CLKWA0,1)
+            GPIO.output(CLKWA1,0)
+        else:
+            GPIO.output(CLKWA0,0)
+            GPIO.output(CLKWA1,1)
 
+        if (pwm2 > 0):
+            GPIO.output(CLKWB0,1)
+            GPIO.output(CLKWB1,0)
+        else:
+            GPIO.output(CLKWB0,0)
+            GPIO.output(CLKWB1,1)
 
+    #Detener los motores
     def stop(self):
-        self.pwm_A.start(0)
-        self.pwm_B.start(0)
-        GPIO.output(RPi_map.CLKWA1,0)
-        GPIO.output(RPi_map.CLKWA0,0)
-        GPIO.output(RPi_map.CLKWB1,0)
-        GPIO.output(RPi_map.CLKWB0,0)
+        self.pwm_32.start(0)
+        self.pwm_33.start(0)
+        
+        GPIO.output(CLKWA1,0)
+        GPIO.output(CLKWA0,0)
+        GPIO.output(CLKWB1,0)
+        GPIO.output(CLKWB0,0)
         
         self.rotating = False
         self.moving = False
@@ -87,23 +94,14 @@ class Motor():
         
     
     def rotate(self, orientation):
-        
-        self.pwm_A.start(99)
-        self.pwm_B.start(99)
-        if(orientation == "right"):
-            GPIO.output(RPi_map.CLKWA1,1)
-            GPIO.output(RPi_map.CLKWA0,0)
-            GPIO.output(RPi_map.CLKWB1,0)
-            GPIO.output(RPi_map.CLKWB0,1)
-        elif(orientation == "left"):
-            GPIO.output(RPi_map.CLKWA1,0)
-            GPIO.output(RPi_map.CLKWA0,1)
-            GPIO.output(RPi_map.CLKWB1,1)
-            GPIO.output(RPi_map.CLKWB0,0)
+        self.rotacion_target = orientation
+        self.rotacion = 0
+        if ( (self.rotacion_target - self.rotacion) < 0 ):
+            self.avanzar(70,-70)
+        else:
+            self.avanzar(-70,70)
 
-        self.rotating = True
-        self.moving = False
-        
+        self.rotating = True        
 
     def timer_interrupt(self):
 
@@ -125,5 +123,4 @@ class Motor():
         self.time_thread.cancel()
         self.time_thread = threading.Timer(self.TIME_INT0,self.timer_interrupt)
         self.time_thread.start()
-
 
