@@ -1,3 +1,5 @@
+# GPIO Map for Explorer Robot
+
 ENCODER_A0 = 22
 ENCODER_A1 = 24
 
@@ -9,5 +11,5 @@ CLKWA0 = 16
 CLKWA1 = 18
 
 PWMB = 33
-CLKWB0 = 15
+CLKWB0 = 15 
 CLKWB1 = 13
