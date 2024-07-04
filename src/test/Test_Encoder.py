@@ -16,8 +16,9 @@ GPIO.setwarnings(False)
 
 # Inicializar el encoder
 encoder = Encoder()
+flag = False
 
-while True:
+while flag != True :
     try:
         # Iniciar la cuenta de pulsos
         encoder.iniciar_cuenta()
@@ -37,4 +38,5 @@ while True:
         
         # Limpiar los GPIOs
         GPIO.cleanup()
+        flag = True
 
