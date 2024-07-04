@@ -81,21 +81,7 @@ class Mpu6050:
         return tempC
     
     
-    def calibrate(self):
-        x=0.
-        y=0.
-        z=0.
-        for i in range(50):
-            x = x + self.readMPU(self.ACCEL_X)
-            y = y + self.readMPU(self.ACCEL_Y)
-            z = z + self.readMPU(self.ACCEL_Z)
-        x= x/50.0
-        y= y/50.0
-        z= z/50.0
-        self.AxCal = x/16384.0
-        self.AyCal = y/16384.0
-        self.AzCal = z/16384.0
-        
+    def calibrate(self):        
         x=0
         y=0
         z=0
