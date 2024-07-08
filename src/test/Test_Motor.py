@@ -5,7 +5,7 @@ sys.path.append("../utils/")
 sys.path.append("../movement/")
 sys.path.append("../data/")
 
-from motor import Motor
+from Motor import Motor
 from Mpu6050 import Mpu6050
 from Encoder import Encoder
 
@@ -15,8 +15,14 @@ print("Sensores creados")
 
 #giro.calibrate()
 motor = Motor(giro,encoder)
-motor.avanzar(0,0)
-time.sleep(5)
+motor.avanzar(90,90)
+time.sleep(2)
+
+motor.stop()
+time.sleep(2)
+
+motor.avanzar(-90,-90)
+time.sleep(2)
 motor.stop()
 
     

@@ -11,7 +11,7 @@ from Rplidar import Rplidar
 
 scan_data_lock = Lock()
 
-lidar = Rplidar(scan_data_lock,'/dev/ttyUSB1', display = True)
+lidar = Rplidar(scan_data_lock,'/dev/ttyUSB0', display = True)
 # Crear una instancia del sensor
 giro = Mpu6050()
 # Realizar la calibración
