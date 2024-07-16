@@ -37,14 +37,14 @@ class Encoder():
     def interrupcion(self,channel):
         if channel == 31:
             self.contador1 += 1
-            if(self.contador1 >= 75):
-                print("Una vuelta \n")
-            print("Canal: " + str(ENCODER_B1) + ": " + str(self.contador1) + "\n")
+            #if(self.contador1 >= 75):
+                #print("Una vuelta \n")
+            #print("Canal: " + str(ENCODER_B1) + ": " + str(self.contador1) + "\n")
         elif channel == 22:
             self.contador2 += 1
-            if(self.contador2 >= 75):
-                print("Una vuelta \n")
-            print("Canal: " + str(ENCODER_A0) + ": " + str(self.contador2) + "\n")
+            #if(self.contador2 >= 75):
+                #print("Una vuelta \n")
+            #print("Canal: " + str(ENCODER_A0) + ": " + str(self.contador2) + "\n")
         
 
     # Método para iniciar la cuenta de pulsos
