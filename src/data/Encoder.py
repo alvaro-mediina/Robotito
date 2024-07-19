@@ -58,6 +58,7 @@ class Encoder():
         print("Fin de cuenta de pulsos.")
         print("Total de pulsos en canal ENCODER_B1: " + str(self.contador1))
         print("Total de pulsos en canal ENCODER_A0: " + str(self.contador2))
+        return self.contador1, self.contador2
 
     # Método para obtener la distancia recorrida en mm
     def obtener_distancia(self):
