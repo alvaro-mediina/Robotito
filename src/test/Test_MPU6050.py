@@ -24,7 +24,7 @@ error_gyro = error[2]
 gyro_tot = 0
 gyro_tot_array = []
 cnt = 0
-while cnt < 10:
+while cnt < 100:
 
     # Obtener datos de aceleración
     accel_data = giro.get_accel()
@@ -51,8 +51,15 @@ while cnt < 10:
     time.sleep(0.1)
     cnt += 1
 
-
-plt.plot(gyro_tot_array)
+fig, ax = plt.subplots(figsize=(3,3))
+ax.plot(gyro_tot_array, linewidth=2 ,color="red", label="Grados")
+ax.set(xlim=(0, 100))
+ax.set_xlabel("Iteraciones")
+ax.set_ylabel("Grados")
+ax.set_title("Gráfica del giro total en el eje Z")
+ax.legend()
 plt.show()
+#plt.plot(gyro_tot_array)
+#plt.show()
 
 #lidar.grafico_lidar()

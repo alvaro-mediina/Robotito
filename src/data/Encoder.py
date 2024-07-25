@@ -34,6 +34,9 @@ class Encoder():
 
     #Cuenta la cantidad de pulsos generados por el encoder en cada rueda
     #Dependiendo del pin que generó el pulso.
+    def obtener_pulsos(self):
+        return self.contador1, self.contador2
+    
     def interrupcion(self,channel):
         if channel == 31:
             self.contador1 += 1

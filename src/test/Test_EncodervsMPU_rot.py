@@ -1,0 +1,73 @@
+import time
+import sys
+import RPi.GPIO as GPIO
+
+sys.path.append("../utils/")
+sys.path.append("../movement/")
+sys.path.append("../data/")
+
+from Motor import Motor
+from Mpu6050 import Mpu6050
+from Encoder import Encoder
+from RPi_map import *
+import matplotlib.pyplot as plt
+from threading import Lock
+from calc_errores import calc_errores
+
+scan_data_lock = Lock()
+# Desactivar las advertencias de pines GPIO en uso
+GPIO.setwarnings(False)
+
+encoder = Encoder()
+giro = Mpu6050()
+print("Sensores creados")
+
+#Realizar la calibración de la MPU
+giro.calibrate()
+error = calc_errores(giro)
+error_gyro = error[2]
+gyro_tot_enc = 0
+gyro_tot_enc_array = []
+gyro_tot_mpu = 0
+gyro_tot_mpu_array = []
+cnt = 0
+
+tiempo = 0.1
+
+motor = Motor(giro,encoder)
+motor.stop()
+encoder.iniciar_cuenta()
+motor.avanzar(100,-100)
+
+while cnt < 30:
+    time.sleep(tiempo)
+    # Obtener y corregir datos del giroscopio
+    gyro_data = giro.get_gyro()
+    gyro_data[2] -= error_gyro[2]
+    
+    gyro_tot_mpu = gyro_tot_mpu + gyro_data[2]*0.1
+    gyro_tot_mpu_array.append(gyro_tot_mpu)
+    
+    contador1, contador2 = encoder.obtener_pulsos()
+    vel_angular_prom_B1 = (360*contador1)/(75*tiempo)
+    vel_angular_prom_A0 = (360*contador2)/(75*tiempo)
+    vel_angular_prom = (vel_angular_prom_B1 + vel_angular_prom_A0)/2
+    
+    gyro_tot_enc = (tiempo*2*3.1415926*vel_angular_prom*30)/(3.1415926*260)
+    gyro_tot_enc_array.append(gyro_tot_enc)
+    cnt += 1
+
+encoder.detener_cuenta()
+motor.stop()
+
+fig, ax = plt.subplots(figsize=(3,3))
+ax.plot(gyro_tot_enc_array, linewidth=2 ,color="red", label="Encoder")
+ax.plot(gyro_tot_mpu_array, linewidth=2 ,color="blue", label="MPU")
+ax.set(xlim=(0, 30))
+ax.set_xlabel("Iteraciones")
+ax.set_ylabel("Grados")
+ax.set_title("Gráfica del giro total en el eje Z")
+ax.legend()
+plt.show()
+
+
