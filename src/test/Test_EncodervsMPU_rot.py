@@ -37,9 +37,9 @@ tiempo = 0.1
 motor = Motor(giro,encoder)
 motor.stop()
 encoder.iniciar_cuenta()
-motor.avanzar(100,-100)
+motor.avanzar(90,-90)
 
-while cnt < 30:
+while cnt < 20:
     time.sleep(tiempo)
     # Obtener y corregir datos del giroscopio
     gyro_data = giro.get_gyro()
@@ -53,7 +53,7 @@ while cnt < 30:
     vel_angular_prom_A0 = (360*contador2)/(75*tiempo)
     vel_angular_prom = (vel_angular_prom_B1 + vel_angular_prom_A0)/2
     
-    gyro_tot_enc = (tiempo*2*3.1415926*vel_angular_prom*30)/(3.1415926*260)
+    gyro_tot_enc = (tiempo*vel_angular_prom*3)/(15)
     gyro_tot_enc_array.append(gyro_tot_enc)
     cnt += 1
 
@@ -63,7 +63,7 @@ motor.stop()
 fig, ax = plt.subplots(figsize=(3,3))
 ax.plot(gyro_tot_enc_array, linewidth=2 ,color="red", label="Encoder")
 ax.plot(gyro_tot_mpu_array, linewidth=2 ,color="blue", label="MPU")
-ax.set(xlim=(0, 30))
+ax.set(xlim=(0, cnt))
 ax.set_xlabel("Iteraciones")
 ax.set_ylabel("Grados")
 ax.set_title("Gráfica del giro total en el eje Z")

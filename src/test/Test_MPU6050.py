@@ -12,7 +12,6 @@ from calc_errores import calc_errores
 
 scan_data_lock = Lock()
 
-#lidar = Rplidar(scan_data_lock,'/dev/ttyUSB0', display = True)
 # Crear una instancia del sensor
 giro = Mpu6050()
 # Realizar la calibración
@@ -24,11 +23,12 @@ error_gyro = error[2]
 gyro_tot = 0
 gyro_tot_array = []
 cnt = 0
+tiempo = 0.1
 while cnt < 100:
 
-    # Obtener datos de aceleración
+    # Obtener datos de aceleracion
     accel_data = giro.get_accel()
-    # Obtener datos de inclinación
+    # Obtener datos de inclinacion
     inclination_data =  giro.get_inclination()
     # Obtener datos del giroscopio
     gyro_data = giro.get_gyro()
@@ -40,7 +40,7 @@ while cnt < 100:
             inclination_data[i] -= error_incl[i]
         gyro_data[i] -= error_gyro[i]
     
-    gyro_tot = gyro_tot + gyro_data[2]*0.1
+    gyro_tot = gyro_tot + gyro_data[2]*tiempo
     gyro_tot_array.append(gyro_tot)
     
     print(f"Aceleración [X, Y, Z]: {accel_data}")
@@ -48,12 +48,12 @@ while cnt < 100:
     print(f"Giroscopio [X, Y, Z]: {gyro_data}")
     print(f"Giroscopio Total [Z]: {gyro_tot}")
     print("\n")
-    time.sleep(0.1)
+    time.sleep(tiempo)
     cnt += 1
 
 fig, ax = plt.subplots(figsize=(3,3))
-ax.plot(gyro_tot_array, linewidth=2 ,color="red", label="Grados")
-ax.set(xlim=(0, 100))
+ax.plot(gyro_tot_array, linewidth=2 ,color="red")
+ax.set(xlim=(0, cnt))
 ax.set_xlabel("Iteraciones")
 ax.set_ylabel("Grados")
 ax.set_title("Gráfica del giro total en el eje Z")
@@ -61,5 +61,3 @@ ax.legend()
 plt.show()
 #plt.plot(gyro_tot_array)
 #plt.show()
-
-#lidar.grafico_lidar()

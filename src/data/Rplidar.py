@@ -86,15 +86,17 @@ class Rplidar:
         print("Cleanup RPlidar")
         self.lidar.stop()
         self.lidar.disconnect()
-
-    def grafico_lidar(self):
+    
+    def get_valores_lidar(self):
+        val_x_array = []
+        val_y_array = []
         print(self.scan_data)
         cnt = 0
         for i in self.scan_data:
-            plt.plot(i*cos(cnt*pi/180.0), i*sin(cnt*pi/180), 'ro')
+            plt.plot(i*cos(cnt*pi/180.0), i*sin(cnt*pi/180.0), 'ro') #Linea necesaria para que ande (?
+            val_x_array.append(i*cos(cnt*pi/180.0))
+            val_y_array.append(i*sin(cnt*pi/180.0))
             cnt += 1
-        plt.show()
-
+        return val_x_array, val_y_array
 #        rplidar.cleanup()
-
 
