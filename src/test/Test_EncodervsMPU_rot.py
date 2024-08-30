@@ -37,7 +37,7 @@ tiempo = 0.1
 motor = Motor(giro,encoder)
 motor.stop()
 encoder.iniciar_cuenta()
-motor.avanzar(90,-90)
+motor.avanzar(0,90)
 
 while cnt < 20:
     time.sleep(tiempo)
@@ -49,11 +49,16 @@ while cnt < 20:
     gyro_tot_mpu_array.append(gyro_tot_mpu)
     
     contador1, contador2 = encoder.obtener_pulsos()
+    
+    if contador2 == 75 or contador1 == 75:
+        motor.stop()
+        exit()
+    #Velocidades de las ruedas
     vel_angular_prom_B1 = (360*contador1)/(75*tiempo)
     vel_angular_prom_A0 = (360*contador2)/(75*tiempo)
     vel_angular_prom = (vel_angular_prom_B1 + vel_angular_prom_A0)/2
     
-    gyro_tot_enc = (tiempo*vel_angular_prom*3)/(15)
+    gyro_tot_enc = (tiempo*vel_angular_prom*3)/35
     gyro_tot_enc_array.append(gyro_tot_enc)
     cnt += 1
 

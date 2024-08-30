@@ -35,7 +35,7 @@ for i in range(3):
 
 motor = Motor(giro,encoder)
 encoder.iniciar_cuenta()
-motor.avanzar(100,-100)
+motor.avanzar(100,100)
 tiempo = 1
 time.sleep(tiempo)
 

@@ -26,6 +26,10 @@ while flag != True :
         # Mantener el programa corriendo para contar los pulsos
         print("Presiona Ctrl+C para detener la cuenta.")
         while True:
+            p1,p2 = encoder.obtener_pulsos()
+            print(p1)
+            print(p2)
+            print("\n")
             time.sleep(1)
     
     except KeyboardInterrupt:

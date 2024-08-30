@@ -27,30 +27,27 @@ class Encoder():
         GPIO.setup(ENCODER_B1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
         # Configurar la interrupción en el pin especificado (flanco de subida)
-        GPIO.add_event_detect(ENCODER_B0, GPIO.RISING, callback=self.interrupcion)
-        GPIO.add_event_detect(ENCODER_B1, GPIO.RISING, callback=self.interrupcion)
-        GPIO.add_event_detect(ENCODER_A0, GPIO.RISING, callback=self.interrupcion)
-        GPIO.add_event_detect(ENCODER_A1, GPIO.RISING, callback=self.interrupcion)
+        GPIO.add_event_detect(ENCODER_B0, GPIO.RISING, callback=self.interrupcion_B_pos, bouncetime=30)
+        GPIO.add_event_detect(ENCODER_A0, GPIO.RISING, callback=self.interrupcion_A_pos, bouncetime=30)
 
     #Cuenta la cantidad de pulsos generados por el encoder en cada rueda
     #Dependiendo del pin que generó el pulso.
     def obtener_pulsos(self):
         return self.contador1, self.contador2
     
-    def interrupcion(self,channel):
-        if channel == 31:
-            self.contador1 += 1
-            #if(self.contador1 >= 75):
-                #print("Una vuelta \n")
-            #print("Canal: " + str(ENCODER_B1) + ": " + str(self.contador1) + "\n")
-        elif channel == 22:
+    def interrupcion_B_pos(self, channel):
+        if(GPIO.input(ENCODER_A1) == GPIO.HIGH):
             self.contador2 += 1
-            #if(self.contador2 >= 75):
-                #print("Una vuelta \n")
-            #print("Canal: " + str(ENCODER_A0) + ": " + str(self.contador2) + "\n")
+        else:
+            self.contador2 -= 1
+
+    def interrupcion_A_pos(self, channel):
+        if(GPIO.input(ENCODER_B1) == GPIO.HIGH):
+            self.contador1 += 1
+        else:
+            self.contador1 -= 1
         
 
-    # Método para iniciar la cuenta de pulsos
     def iniciar_cuenta(self):
         self.contador1 = 0
         self.contador2 = 0
@@ -58,9 +55,8 @@ class Encoder():
 
     # Método para detener la cuenta de pulsos
     def detener_cuenta(self):
-        print("Fin de cuenta de pulsos.")
-        print("Total de pulsos en canal ENCODER_B1: " + str(self.contador1))
         print("Total de pulsos en canal ENCODER_A0: " + str(self.contador2))
+        print("Total de pulsos en canal ENCODER_B0: " + str(self.contador1))
         return self.contador1, self.contador2
 
     # Método para obtener la distancia recorrida en mm

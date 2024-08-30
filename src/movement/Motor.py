@@ -44,8 +44,9 @@ class Motor():
         self.time_thread = threading.Timer(self.TIME_INT0,self.timer_interrupt)
         self.time_thread.start()
     
-    #PWM2 es el motor de la derecha    (Mirándolo desde el puente H)
-    #PWM1 es el motor de la izquierda 
+    #PWM1 es el motor de la izquierda    (Mirándolo desde el puente H)
+    #PWM2 es el motor de la derecha
+    #def avanzar(self,izquierda, derecha)
     def avanzar(self,pwm1,pwm2):
 
         # Inicia el PWM con un ciclo de trabajo del pot% (máximo)
