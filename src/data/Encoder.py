@@ -10,6 +10,7 @@ sys.path.append("../data/")
 from RPi_map import *
 import RPi.GPIO as GPIO
 
+import constants
 
 class Encoder():
 
@@ -27,8 +28,8 @@ class Encoder():
         GPIO.setup(ENCODER_B1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
         # Configurar la interrupción en el pin especificado (flanco de subida)
-        GPIO.add_event_detect(ENCODER_B0, GPIO.RISING, callback=self.interrupcion_B_pos, bouncetime=30)
-        GPIO.add_event_detect(ENCODER_A0, GPIO.RISING, callback=self.interrupcion_A_pos, bouncetime=30)
+        GPIO.add_event_detect(ENCODER_B0, GPIO.RISING, callback=self.interrupcion_B_pos, bouncetime=5)
+        GPIO.add_event_detect(ENCODER_A0, GPIO.RISING, callback=self.interrupcion_A_pos, bouncetime=5)
 
     #Cuenta la cantidad de pulsos generados por el encoder en cada rueda
     #Dependiendo del pin que generó el pulso.
@@ -36,13 +37,13 @@ class Encoder():
         return self.contador1, self.contador2
     
     def interrupcion_B_pos(self, channel):
-        if(GPIO.input(ENCODER_A1) == GPIO.HIGH):
+        if(GPIO.input(ENCODER_B1) == GPIO.HIGH):
             self.contador2 += 1
         else:
             self.contador2 -= 1
 
     def interrupcion_A_pos(self, channel):
-        if(GPIO.input(ENCODER_B1) == GPIO.HIGH):
+        if(GPIO.input(ENCODER_A1) == GPIO.HIGH):
             self.contador1 += 1
         else:
             self.contador1 -= 1
@@ -61,8 +62,8 @@ class Encoder():
 
     # Método para obtener la distancia recorrida en mm
     def obtener_distancia(self):
-        distancia1 = self.contador1 * 2.512
-        distancia2 = self.contador2 * 2.512
+        distancia1 = self.contador1 * constants.theorical_move_per_pulse
+        distancia2 = self.contador2 * constants.theorical_move_per_pulse
         return distancia1, distancia2
 
 

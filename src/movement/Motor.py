@@ -81,15 +81,17 @@ class Motor():
         self.rotating = False
         self.moving = False
     
-    
-    def polar_control(self,phi1,fase):
+    #phi: grados
+    #distancia: a recorrer
+    def polar_control(self,phi1,distancia):
         self.stop()
-        cant_pul = round((fase*10)/2.512)
+        cant_pul = round((distancia*10)/2.512)
         self.rotate(phi1)
         while(self.rotating):
             pass
         self.encoder.contador1 = 0
-        while(self.encoder.contador1<cant_pul):
+        self.encoder.contador2 = 0
+        while((self.encoder.contador1+self.encoder.contador2)/2<cant_pul):
             self.avanzar(-50,-50)
         self.stop()
         

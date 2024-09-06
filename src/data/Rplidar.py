@@ -12,9 +12,11 @@ import matplotlib.animation as animation
 
 
 class Rplidar:
-    def __init__(self, scan_data_lock, PORT='/dev/ttyUSB0', display=False):
+    def __init__(self, scan_data_lock, PORT, display=False):
 
         self.display = display
+        
+        #self.angles = []
 
         self.scan_data_lock = scan_data_lock
         self.lidar = RPLidar(PORT)
@@ -32,18 +34,37 @@ class Rplidar:
         self.thread_data = ThreadHandler.ThreadHandler(
             self.get_periodic_data, "RPlidar data acquisition thread")
         self.thread_data.start()
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     def stop_motor(self):
         self.lidar.stop_motor()
 
+#    def get_periodic_data(self):
+#        temp_iter = next(self.iterator)
+#        print("Get Scan")
+#        self.scan_data_lock.acquire()
+#        for i in temp_iter:
+#            print(temp_iter)
+#            self.scan_data[min([359, floor(i[1])])] = i[2]
+#        time.sleep(0.01)
+#        self.scan_data_lock.release()
+        
     def get_periodic_data(self):
-        temp_iter = next(self.iterator)
-        self.scan_data_lock.acquire()
-        for i in temp_iter:
-            self.scan_data[min([359, floor(i[1])])] = i[2]
-        time.sleep(0.01)
-        self.scan_data_lock.release()
+        try:
+            temp_iter = next(self.iterator)
+            #print("Get Scan")
+            self.scan_data_lock.acquire()
+            for i in temp_iter:
+                #print(i[1])
+                #self.angles.append(i[1])
+                self.scan_data[min([359, floor(i[1])])] = i[2]
+        except RPLidarException as e:
+            print("LIDAR error:", e)
+            self.reset()  # Reiniciar el LIDAR
+        finally:
+            self.scan_data_lock.release()
+            time.sleep(0.05)
+
 
     def get_data(self):
         return self.scan_data
@@ -87,16 +108,21 @@ class Rplidar:
         self.lidar.stop()
         self.lidar.disconnect()
     
+    def clear_input(self):
+        self.lidar.clear_input()
+    
+    def reset(self):
+        self.lidar.reset()
+    
     def get_valores_lidar(self):
         val_x_array = []
         val_y_array = []
         print(self.scan_data)
         cnt = 0
         for i in self.scan_data:
-            plt.plot(i*cos(cnt*pi/180.0), i*sin(cnt*pi/180.0), 'ro') #Linea necesaria para que ande (?
+            #plt.plot(i*cos(cnt*pi/180.0), i*sin(cnt*pi/180.0), 'ro') #Linea necesaria para que ande (?
             val_x_array.append(i*cos(cnt*pi/180.0))
             val_y_array.append(i*sin(cnt*pi/180.0))
             cnt += 1
         return val_x_array, val_y_array
-#        rplidar.cleanup()
 
