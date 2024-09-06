@@ -9,6 +9,7 @@ sys.path.append("../data/")
 from Motor import Motor
 from Mpu6050 import Mpu6050
 from Encoder import Encoder
+from constants import pulse_per_lap
 from RPi_map import *
 import matplotlib.pyplot as plt
 from threading import Lock
@@ -23,24 +24,29 @@ giro = Mpu6050()
 print("Sensores creados")
 
 
-contador1 = 0
-contador2 = 0
 motor = Motor(giro,encoder)
 encoder.iniciar_cuenta()
 
 flag = False
 
-while not flag:
-    motor.avanzar(50,-50)
+while  not flag:
+    motor.avanzar(0,50)
     contadorA0, contadorB0 = encoder.obtener_pulsos()
-    if contadorA0 > 75:
+    
+    contadorA0 = abs(contadorA0)
+    contadorB0 = abs(contadorB0)
+    
+    if contadorA0 > pulse_per_lap:
         GPIO.output(CLKWA0,0) #Si dio "una vuelta" apago el motor izquierda.
-    if contadorB0 > 75:
+    if contadorB0 > pulse_per_lap:
         GPIO.output(CLKWB0,0) #Si dio "una vuelta" apago el motor derecha.
     
-    if contadorA0 >= 75 or contadorB0 >= 75:
+    if contadorA0 >= pulse_per_lap or contadorB0 >= 75:
         flag = True
-        
+
 motor.stop()
 encoder.detener_cuenta()
+        
+        
+#motor.stop()
 

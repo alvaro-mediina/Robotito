@@ -37,8 +37,8 @@ motor = Motor(giro,encoder)
 encoder.iniciar_cuenta()
 motor.avanzar(100,100)
 tiempo = 1
+print("Avanzando")
 time.sleep(tiempo)
-
 motor.stop()
 
 # Obtener datos finales del giroscopio
