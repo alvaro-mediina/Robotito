@@ -7,8 +7,8 @@ Robotito
 
 ## Tareas Pendientes
 - [OK] Encoder.
-- [] MPU.
-- [] LiDAR.
+- [OK] MPU.
+- [OK] LiDAR.
 - [OK] Hacer andar el motor.
 
 ## Conexiones
@@ -31,3 +31,9 @@ PIN 3 -> Cable BLANCO (SDA)
 
 **Puente H**
 PIN 14 -> Cable Rosado (GND)
+
+
+# Control PID
+
+- La fase de target (a donde uno quiere llegar) debe ser convertida en una diferencia de ciclos de trabajo.
+- Se debe ir monitoreando la fase porque cuando uno alcanzó la fase que quería, se anula la diferencia del ciclo de trabajo.

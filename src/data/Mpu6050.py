@@ -1,7 +1,12 @@
 import smbus
 import time
 import math
+import sys
 import RPi.GPIO as gpio
+
+sys.path.append("../utils/")
+
+from constants import FULL_SCALE_RANGE
 
 class Mpu6050:
     PWR_M   = 0x6B
@@ -15,6 +20,7 @@ class Mpu6050:
     GYRO_X  = 0x43
     GYRO_Y  = 0x45
     GYRO_Z  = 0x47
+    RESET = 0x68
     TEMP = 0x41
     
     def __init__(self, addr=0x68 ):
@@ -28,11 +34,22 @@ class Mpu6050:
         self.bus = smbus.SMBus(1)
         self.bus.write_byte_data(self.Device_Address, self.DIV, 7)
         self.bus.write_byte_data(self.Device_Address, self.PWR_M, 1)
+        
+        #Reseteo de sensores
+        self.resetMPU(addr)
+        
         self.bus.write_byte_data(self.Device_Address, self.CONFIG, 0)
-        self.bus.write_byte_data(self.Device_Address, self.GYRO_CONFIG, 24)
+        self.bus.write_byte_data(self.Device_Address, self.GYRO_CONFIG, 8)
         self.bus.write_byte_data(self.Device_Address, self.INT_EN, 1)
-        #self.calibrate()
+        self.calibrate()
         time.sleep(1)
+    
+    def resetMPU(self, addr=0x68):
+        self.Device_Address = addr
+        #Reseteo de sensores
+        self.bus.write_byte_data(self.Device_Address, self.RESET, 7)
+        time.sleep(0.5)
+        self.bus.write_byte_data(self.Device_Address, self.RESET, 0)
 
     def readMPU(self, addr):
         high = self.bus.read_byte_data(self.Device_Address, addr)
@@ -50,6 +67,8 @@ class Mpu6050:
         Ay = (y/16384.0-self.AyCal)
         Az = (z/16384.0-self.AzCal)
         #print "X="+str(Ax)
+        
+        
         return [Ax,Ay,Az]
 
     def get_inclination (self):
@@ -67,9 +86,9 @@ class Mpu6050:
         x = self.readMPU(self.GYRO_X)
         y = self.readMPU(self.GYRO_Y)
         z = self.readMPU(self.GYRO_Z)
-        Gx = x/16.4 - self.GxCal
-        Gy = y/16.4 - self.GyCal
-        Gz = z/16.4 - self.GzCal
+        Gx = x/(FULL_SCALE_RANGE) - self.GxCal
+        Gy = y/(FULL_SCALE_RANGE) - self.GyCal
+        Gz = z/(FULL_SCALE_RANGE) - self.GzCal
         #print "X="+str(Gx)
         return [Gx,Gy,Gz]
     
@@ -80,19 +99,20 @@ class Mpu6050:
         #print tempC
         return tempC
     
-    
     def calibrate(self):        
         x=0
         y=0
         z=0
-        for i in range(50):
+        CALIBRATION_WINDOW = 50
+        for i in range(CALIBRATION_WINDOW):
             x = x + self.readMPU(self.GYRO_X)
             y = y + self.readMPU(self.GYRO_Y)
             z = z + self.readMPU(self.GYRO_Z)
-        x= x/50
-        y= y/50
-        z= z/50
-        self.GxCal = x/16.4
-        self.GyCal = y/16.4
-        self.GzCal = z/16.4
-
+            time.sleep(0.1)
+        x= x/CALIBRATION_WINDOW
+        y= y/CALIBRATION_WINDOW
+        z= z/CALIBRATION_WINDOW
+        self.GxCal = x/(FULL_SCALE_RANGE)
+        self.GyCal = y/(FULL_SCALE_RANGE)
+        self.GzCal = z/(FULL_SCALE_RANGE)
+        
