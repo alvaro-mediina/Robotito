@@ -385,6 +385,8 @@ class Motor():
             #Desplazamientos
             desp_enc1 = diff_pulsos1 * theorical_move_per_pulse
             desp_enc2 = diff_pulsos2 * theorical_move_per_pulse
+
+            #CALCULAR DIFERENCIAL DE DISTANCIAS
             
             current_desp += (desp_enc1 + desp_enc2)/2
             print("Desplazamiento actual -> ", round(abs(current_desp/alpha),2))

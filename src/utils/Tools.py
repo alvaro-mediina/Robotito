@@ -13,10 +13,9 @@ def polar_to_cartesian(theta, dist):
     return x, y
 
 def drawArrowsFromOrigin(polar_coords):
-    """Dibuja flechas secuenciales desde el origen a las coordenadas polares."""
-    fig, ax = plt.subplots(subplot_kw={'aspect': 'equal'})
-    
-    #Convertir todas las coordenadas a cartesianas para calcular límites
+    fig, ax = plt.subplots()
+    max_range = max(abs(coord[1]) for coord in polar_coords)
+
     cartesian_coords = [polar_to_cartesian(theta,dist) for theta,dist in polar_coords]
     all_x = [x for x, y in cartesian_coords] + [0]
     all_y = [y for x, y in cartesian_coords] + [0]
@@ -31,35 +30,21 @@ def drawArrowsFromOrigin(polar_coords):
     # Dibujar el eje cartesiano
     ax.axhline(0, color='black', linewidth=0.5, linestyle='--')
     ax.axvline(0, color='black', linewidth=0.5, linestyle='--')
-    
-    # Inicializar punto de partida en el origen
-    current_x, current_y = 0, 0
-    
-    for theta,dist in polar_coords:
-        # Convertir a cartesianas
-        target_x, target_y = polar_to_cartesian(theta,dist)
 
-        # Dibujar flecha desde el punto actual al siguiente
-        dx = target_x #- current_x
-        dy = target_y #- current_y
-        print("currentx -> ", current_x)
-        print("currenty -> ", current_y)
-        print("targetx -> ", target_x)
-        print("targety -> ", target_y)
-        if not (dx == 0 and dy == 0):
-            ax.arrow(current_x,current_y,dx,dy,
-                     head_width=max_range * 0.05, head_length=max_range * 0.1,
-                     fc='blue', ec='blue', length_includes_head=True)
+    current_x, current_y = 0, 0  # Coordenadas iniciales en el origen
+    for angle, distance in polar_coords:
+        target_x = current_x + distance * np.sin(np.radians(angle)) * (-1)
+        target_y = current_y + distance * np.cos(np.radians(angle))
+        ax.arrow(current_x, current_y, target_x - current_x, target_y - current_y,
+                 head_width=max_range * 0.05, head_length=max_range * 0.1,
+                 fc='blue', ec='blue', length_includes_head=True)
+        current_x, current_y = target_x, target_y  # Actualizar las coordenadas de inicio
 
-        # Actualizar el punto actual
-        current_x = dx
-        current_y = dy
-    
-    #Estilo y título
     ax.set_title('Flechas entre coordenadas polares')
     ax.set_aspect('equal')
     plt.grid(True, linestyle='--', alpha=0.6)
     plt.show()
+    
 def drawAllData(superMegaArrayReturn,N):
     for i in range(N):
         plt.plot(superMegaArrayReturn[i][0], marker='o', linestyle='-', color='b')
