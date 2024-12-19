@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def polar_to_cartesian(theta, dist):
+def polarToCartesian(theta, dist):
     """Convierte coordenadas polares a cartesianas."""
     # Convertir ángulo a radianes respetando la convención dada
     theta = (theta*2*np.pi)/(360)
@@ -16,7 +16,7 @@ def drawArrowsFromOrigin(polar_coords):
     fig, ax = plt.subplots()
     max_range = max(abs(coord[1]) for coord in polar_coords)
 
-    cartesian_coords = [polar_to_cartesian(theta,dist) for theta,dist in polar_coords]
+    cartesian_coords = [polarToCartesian(theta,dist) for theta,dist in polar_coords]
     all_x = [x for x, y in cartesian_coords] + [0]
     all_y = [y for x, y in cartesian_coords] + [0]
     
@@ -44,7 +44,7 @@ def drawArrowsFromOrigin(polar_coords):
     ax.set_aspect('equal')
     plt.grid(True, linestyle='--', alpha=0.6)
     plt.show()
-    
+
 def drawAllData(superMegaArrayReturn,N):
     for i in range(N):
         plt.plot(superMegaArrayReturn[i][0], marker='o', linestyle='-', color='b')
