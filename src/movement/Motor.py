@@ -326,6 +326,7 @@ class Motor():
         
         #Desplazamiento
         current_desp = 0
+        polar_coords = []
         desp_array = []
         error_desp_array = []
         error_desp_array.append(dist_target-current_desp)
@@ -387,8 +388,12 @@ class Motor():
             desp_enc2 = diff_pulsos2 * theorical_move_per_pulse
 
             #CALCULAR DIFERENCIAL DE DISTANCIAS
-            
             current_desp += (desp_enc1 + desp_enc2)/2
+            
+            diff_desp = abs((desp_enc1 + desp_enc2)/(2*alpha))
+            
+            polar_coords.append((gyro_tot ,diff_desp))
+            
             print("Desplazamiento actual -> ", round(abs(current_desp/alpha),2))
             desp_array.append(round(abs(current_desp/alpha),2))
             error_desp_array.append(dist_target-round(abs(current_desp/alpha),2))
@@ -405,13 +410,14 @@ class Motor():
         print("MPU Reseteada exitosamente")
         
         # Devolvemos todos los arrays para graficar
-        superArrayReturn.append(arrayDutyCycle1)
-        superArrayReturn.append(arrayDutyCycle2)
-        superArrayReturn.append(gyro_array)
-        superArrayReturn.append(error_gyro_array)
-        superArrayReturn.append(desp_array)
-        superArrayReturn.append(error_desp_array)
-        return superArrayReturn
+        #superArrayReturn.append(arrayDutyCycle1)
+        #superArrayReturn.append(arrayDutyCycle2)
+        #superArrayReturn.append(gyro_array)
+        #superArrayReturn.append(error_gyro_array)
+        #superArrayReturn.append(desp_array)
+        #superArrayReturn.append(error_desp_array)
+        #superArrayReturn.append(polar_coords)
+        return polar_coords
 
     
     #Rotaciones

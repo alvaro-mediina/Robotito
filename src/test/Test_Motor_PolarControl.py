@@ -24,10 +24,10 @@ GPIO.setwarnings(False)
 encoder = Encoder()
 giro = Mpu6050()
 motor = Motor(giro,encoder)
-contador = 1
-array_coord = [(0,500),(90,500),(90,500)]
+counter = 1
+array_coord = [(0,550),(90,550),(180,550)]
 
-archivo = 'Datos_LinearControl.txt'
+archivo = 'Datos_PolarControl.txt'
 
 #Limpieza
 cleanFile(archivo)
@@ -35,8 +35,8 @@ cleanFile(archivo)
 #Mega-Panic
 #iniciar = 0
 
-#iniciar = int(input("¿Comenzar? -> "))
-iniciar = 0
+iniciar = int(input("¿Comenzar? -> "))
+
 superMegaArrayReturn = []
 while iniciar != 0 :
     if iniciar == 1:
@@ -55,19 +55,21 @@ while iniciar != 0 :
     elif iniciar == 3:
         phi = int(input("ÁNGULO ->"))
         dist = int(input("DISTANCIA ->"))
-        if contador == 1:
+        if counter == 1:
             coord1 = (phi,dist)
             array_coord.append(coord1)
-            contador += 1
-        elif contador == 2:
+            counter += 1
+        elif counter == 2:
             coord2 = (phi,dist)
             array_coord.append(coord2)
-            contador += 1
-        elif contador == 3:
+            counter += 1
+        elif counter == 3:
             coord3 = (phi,dist)
             array_coord.append(coord3)
         superArrayReturn = motor.polarControl(phi, dist)
-        superMegaArrayReturn.append(superArrayReturn)
+        for tupla in superArrayReturn:
+            print(tupla)
+            superMegaArrayReturn.append(tupla)
     elif iniciar == 4:
         phi = int(input("ÁNGULO ->"))
         motor.rotate_with_timer(phi)
@@ -80,8 +82,17 @@ while iniciar != 0 :
         
     iniciar = int(input("¿Ahora? -> "))
 
-drawArrowsFromOrigin(array_coord)
-#drawAllData(superMegaArrayReturn,3)
+print("Lenght superMegaArrayReturn -> ", len(superMegaArrayReturn) )
+
+if type(superMegaArrayReturn) == type(array_coord):
+    with open(archivo, "w", newline="") as archivo:
+        for valor in superMegaArrayReturn:
+            archivo.write(f"{valor} \n")
+    #drawArrowsFromOrigin(array_coord, superMegaArrayReturn)
+else:
+    print("No tipea")
+#drawAllData(superMegaArrayReturn, counter)
+
 if iniciar == 0:
     #Panic
     motor.stop()

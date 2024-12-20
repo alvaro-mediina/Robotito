@@ -12,11 +12,12 @@ def polarToCartesian(theta, dist):
     print("y -> ", y)
     return x, y
 
-def drawArrowsFromOrigin(polar_coords):
+def drawArrowsFromOrigin(polar_coords, real_polarCoords):
     fig, ax = plt.subplots()
     max_range = max(abs(coord[1]) for coord in polar_coords)
 
     cartesian_coords = [polarToCartesian(theta,dist) for theta,dist in polar_coords]
+    
     all_x = [x for x, y in cartesian_coords] + [0]
     all_y = [y for x, y in cartesian_coords] + [0]
     
@@ -37,8 +38,20 @@ def drawArrowsFromOrigin(polar_coords):
         target_y = current_y + distance * np.cos(np.radians(angle))
         ax.arrow(current_x, current_y, target_x - current_x, target_y - current_y,
                  head_width=max_range * 0.05, head_length=max_range * 0.1,
-                 fc='blue', ec='blue', length_includes_head=True)
+                 fc='green', ec='green', length_includes_head=False)
         current_x, current_y = target_x, target_y  # Actualizar las coordenadas de inicio
+
+    
+    current_x, current_y = 0, 0
+     
+    for angle, distance in real_polarCoords:
+        target_x = current_x + distance * np.sin(np.radians(angle)) * (-1)
+        target_y = current_y + distance * np.cos(np.radians(angle))
+        ax.arrow(current_x, current_y, target_x - current_x, target_y - current_y,
+                 head_width=max_range * 0.05, head_length=max_range * 0.1,
+                 fc='red', ec='red', length_includes_head=True)
+        current_x, current_y = target_x, target_y  # Actualizar las coordenadas de inicio
+        
 
     ax.set_title('Flechas entre coordenadas polares')
     ax.set_aspect('equal')
@@ -77,5 +90,10 @@ def drawAllData(superMegaArrayReturn,N):
         plt.ylabel('Error de desplazamiento [mm]')
         plt.title('Error de desplazamiento del vehículo')
         plt.show()
+        
+    
+
+#def graphRealTrayectory (superMegaArrayReturn, polar_coords):
+
 
 
