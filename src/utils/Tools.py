@@ -1,30 +1,16 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def polarToCartesian(theta, dist):
-    """Convierte coordenadas polares a cartesianas."""
-    # Convertir ángulo a radianes respetando la convención dada
-    theta = (theta*2*np.pi)/(360)
-    print("Angulo-> ", theta)
-    x = dist * np.sin(theta) * (-1)
-    y = dist * np.cos(theta)
-    print("x -> ", x)
-    print("y -> ", y)
-    return x, y
+def polarToCartesian(current_x,  current_y, phi, dist):
+    target_x = current_x + dist * np.sin(np.radians(phi)) * (-1)
+    target_y = current_y + dist * np.cos(np.radians(phi))
+    return target_x, target_y
 
 def drawArrowsFromOrigin(polar_coords, real_polarCoords):
     fig, ax = plt.subplots()
-    max_range = max(abs(coord[1]) for coord in polar_coords)
+    
+    max_range = 1000
 
-    cartesian_coords = [polarToCartesian(theta,dist) for theta,dist in polar_coords]
-    
-    all_x = [x for x, y in cartesian_coords] + [0]
-    all_y = [y for x, y in cartesian_coords] + [0]
-    
-    # Configurar límites dinámicamente
-    max_range = max(max(map(abs, all_x)), max(map(abs, all_y))) * 2
-    if max_range == 0:
-        max_range = 1
     ax.set_xlim(-max_range, max_range)
     ax.set_ylim(-max_range, max_range)
     
@@ -33,22 +19,21 @@ def drawArrowsFromOrigin(polar_coords, real_polarCoords):
     ax.axvline(0, color='black', linewidth=0.5, linestyle='--')
 
     current_x, current_y = 0, 0  # Coordenadas iniciales en el origen
-    for angle, distance in polar_coords:
-        target_x = current_x + distance * np.sin(np.radians(angle)) * (-1)
-        target_y = current_y + distance * np.cos(np.radians(angle))
+    for angle, dist in polar_coords:
+        target_x, target_y = polarToCartesian(current_x, current_y, angle, dist) 
         ax.arrow(current_x, current_y, target_x - current_x, target_y - current_y,
-                 head_width=max_range * 0.05, head_length=max_range * 0.1,
+                 head_width=max_range * 0.03, head_length=max_range * 0.1,
                  fc='green', ec='green', length_includes_head=False)
         current_x, current_y = target_x, target_y  # Actualizar las coordenadas de inicio
 
     
     current_x, current_y = 0, 0
      
-    for angle, distance in real_polarCoords:
-        target_x = current_x + distance * np.sin(np.radians(angle)) * (-1)
-        target_y = current_y + distance * np.cos(np.radians(angle))
+    for angle, dist in real_polarCoords:
+        target_x = current_x + dist * np.sin(np.radians(angle)) * (-1)
+        target_y = current_y + dist * np.cos(np.radians(angle))
         ax.arrow(current_x, current_y, target_x - current_x, target_y - current_y,
-                 head_width=max_range * 0.05, head_length=max_range * 0.1,
+                 head_width=max_range * 0.03, head_length=max_range * 0.05,
                  fc='red', ec='red', length_includes_head=True)
         current_x, current_y = target_x, target_y  # Actualizar las coordenadas de inicio
         
