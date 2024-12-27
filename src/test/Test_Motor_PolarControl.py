@@ -70,6 +70,7 @@ while iniciar != 0 :
         for tupla in superArrayReturn:
             print(tupla)
             superMegaArrayReturn.append(tupla)
+        print("Lenght superMegaArrayReturn -> ", len(superMegaArrayReturn) )
     elif iniciar == 4:
         phi = int(input("ÁNGULO ->"))
         motor.rotate_with_timer(phi)
