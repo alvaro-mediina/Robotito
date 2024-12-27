@@ -75,4 +75,4 @@ real_polarCoords = [
 ]
 
 
-drawArrowsFromOrigin(polar_coords, real_polarCoords)
+drawArrowsFromOrigin(polar_coords, polar_coords)
